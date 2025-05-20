@@ -5,12 +5,10 @@
 ขั้นตอนการติดตั้งและรันโปรเจกต์
 ใช้  node.js version 22, 
 
-1. run database
+1. run database (username: root, password: password)
 ```
 $ docker-compose up -d
 ```
-username: root
-password: password
 
 2. ติดตั้ง dependencies
 ```
