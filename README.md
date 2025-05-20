@@ -31,3 +31,7 @@ $ npm run dev
 ```
 
 6. เข้าใช้งานที่ api ที่ http://localhost:3000 , database ที่ http://localhost:8090/
+
+
+## โจทย์ข้อ 1 ให้ออกแบบระบบฐานข้อมูล(ทำเป็นรูปแบบ ER)
+![Alt text](ER.png)
