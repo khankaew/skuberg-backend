@@ -45,9 +45,6 @@ model Wallet {
 
   account  Account  @relation(fields: [account_id], references: [id])
   currency Currency @relation(fields: [currency_id], references: [id])
-
-  transfersFrom Transfer[] @relation("TransferFrom")
-  transfersTo   Transfer[] @relation("TransferTo")
 }
 
 model Transfer {
@@ -58,9 +55,6 @@ model Transfer {
   coin_amount   Float
   created_at    DateTime     @default(now())
   updated_at    DateTime     @updatedAt
-
-  from_wallet Wallet? @relation("TransferFrom", fields: [from_address], references: [address])
-  to_wallet   Wallet? @relation("TransferTo", fields: [to_address], references: [address])
 }
 
 model Order {
