@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  wallets Wallet[]
+  orders  Order[]
+}
+
+model Currency {
+  id            Int      @id @default(autoincrement())
+  currency_name String
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  wallets Wallet[]
+  orders  Order[]
+}
+
+model Wallet {
+  id          Int      @id @default(autoincrement())
+  account_id  Int
+  address     String   @unique
+  currency_id Int
+  balance     Float
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  account  Account  @relation(fields: [account_id], references: [id])
+  currency Currency @relation(fields: [currency_id], references: [id])
+
+  transfersFrom Transfer[] @relation("TransferFrom")
+  transfersTo   Transfer[] @relation("TransferTo")
+}
+
+model Transfer {
+  id            Int          @id @default(autoincrement())
+  transfer_type TransferType
+  from_address  String?
+  to_address    String?
+  coin_amount   Float
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+
+  from_wallet Wallet? @relation("TransferFrom", fields: [from_address], references: [address])
+  to_wallet   Wallet? @relation("TransferTo", fields: [to_address], references: [address])
+}
+
+model Order {
+  id             Int         @id @default(autoincrement())
+  order_type     OrderType
+  account_id     Int
+  currency_id    Int
+  amount_init    Float
+  usd_init       Float
+  amount_balance Float
+  usd_balance    Float
+  status         OrderStatus
+  created_at     DateTime    @default(now())
+  updated_at     DateTime    @updatedAt
+
+  account  Account  @relation(fields: [account_id], references: [id])
+  currency Currency @relation(fields: [currency_id], references: [id])
+
+  buyTransactions  Transaction[] @relation("BuyOrder")
+  sellTransactions Transaction[] @relation("SellOrder")
+}
+
+model Transaction {
+  id             Int      @id @default(autoincrement())
+  buy_order_id   Int
+  sell_order_id  Int
+  currency_price Float
+  amount         Float
+  price_usd      Float
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  buy_order  Order @relation("BuyOrder", fields: [buy_order_id], references: [id])
+  sell_order Order @relation("SellOrder", fields: [sell_order_id], references: [id])
+}
+
+enum TransferType {
+  INTERNAL
+  WITHDRAW
+  DEPOSIT
+}
+
+enum OrderType {
+  BUY
+  SELL
+}
+
+enum OrderStatus {
+  WAIT
+  SUCCESS
+}
